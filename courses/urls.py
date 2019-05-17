@@ -20,4 +20,7 @@ api_url = 'api/v1/'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(f'{api_url}', include('api.users.urls')),
+    path(f'{api_url}', include('api.courses.urls')),
+    path(f'{api_url}', include('api.lessons.urls')),
+
 ]

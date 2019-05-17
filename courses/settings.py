@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api.users',
+    'api.courses',
+    'api.lessons',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +57,7 @@ ROOT_URLCONF = 'courses.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, '../api/users/templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +71,36 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'courses.wsgi.application'
+
+
+SITE_ID = 1
+
+# Custom authentication settings
+AUTH_USER_MODEL = 'users.User'
+CUSTOM_REGISTRATION = {
+    'SEND_ACTIVATION_EMAIL': False,
+}
+
+# Rest framework settings
+REST_USE_JWT = True
+JWT_AUTH = {
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=5),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'api.users.handlers.jwt_response_payload_handler'
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.DjangoModelPermissions',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'common.handlers.CustomNumberPagination',
+    'PAGE_SIZE': 30,
+}
+
 
 
 # Database
@@ -124,4 +156,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'users.User'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'delyveriappmexico@gmail.com'
+EMAIL_HOST_PASSWORD = 'delyveriappmexico123'

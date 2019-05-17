@@ -18,11 +18,37 @@ from .serializers import CustomJWTSerializer, UserSerializer, UserCreateSerializ
 from .forms import ResetPasswordForm
 
 
+class UsersView(APIView):
+    queryset = User.objects.none()
+
+    def get(self, request, id):
+        user = User.objects.get(pk=id)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self,request,id):
+        user = User.objects.get(pk=id)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        try:
+            user = User.objects.get(pk=id)
+            user.delete()
+        except:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class UserCreate(APIView):
     authentication_classes = []
     permission_classes = []
 
     def post(self, request):
+        #item_user = User(email=request.POST.get("email", ""))
+        #item_user.save()
         serializer = UserCreateSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = serializer.save()
